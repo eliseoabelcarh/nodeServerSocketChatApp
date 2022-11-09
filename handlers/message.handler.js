@@ -1,6 +1,8 @@
 let currentMessageId = 1;
 
 function createMessage(user, messageText) {
+  console.log('creando mensaje:user:', user)
+  console.log('creando mensaje:messageText', messageText)
   return {
     _id: currentMessageId++,
     text: messageText,

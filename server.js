@@ -12,8 +12,6 @@ io.on("connection", (socket) => {
   socket.on("join", (username) => {
     users[socket.id].username = username;
     console.log("username:", username);
-    socket.broadcast.emit("message", `${username} has joined the chat`);
-
     messageHandler.handleMessage(socket, users);
 
     // socket.on("disconnect", () => {
