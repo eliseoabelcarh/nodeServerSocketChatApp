@@ -3,6 +3,7 @@ let currentMessageId = 1;
 function createMessage(user, messageText) {
   console.log('creando mensaje:user:', user)
   console.log('creando mensaje:messageText', messageText)
+  console.log('creando mensaje:avatar', user.avatar)
   return {
     _id: currentMessageId++,
     text: messageText,
@@ -10,7 +11,7 @@ function createMessage(user, messageText) {
     user: {
       _id: user.userId,
       name: user.username,
-      avatar: "https://placeimg.com/140/140/any",
+      avatar: user.avatar,
     },
   };
 }
