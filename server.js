@@ -8,8 +8,8 @@ const users = {};
 function createUserAvatarUrl(username) {
   // const nameSpace = username.replaceAll("\\s+","")
   // return `https://ui-avatars.com/api/?name=${nameSpace}&background=random`;
-  const rand1 = Math.round(Math.random() * 200 +100);
-  const rand2 = Math.round(Math.random() * 200 +100);
+  const rand1 = Math.round(Math.random() * 200 + 100);
+  const rand2 = Math.round(Math.random() * 200 + 100);
   return `https://placeimg.com/${rand1}/${rand2}/any`;
 }
 
@@ -21,13 +21,18 @@ io.on("connection", (socket) => {
     users[socket.id].avatar = createUserAvatarUrl(username);
     console.log("username:", username);
     messageHandler.handleMessage(socket, users);
-
-    // socket.on("disconnect", () => {
-    //   io.emit("message", `${username} has left the chat`);
-    // });
   });
+  socket.on("action", (action) => {
+    console.log("action:", action);
 
-  
+    if (action.type === "server/hello") {
+      console.log("got hello event", action);
+      socket.emit("action", {
+        type: "chat/setMessage",
+        payload: "Hello from the server!",
+      });
+    }
+  });
 });
 
 io.listen(3001);
