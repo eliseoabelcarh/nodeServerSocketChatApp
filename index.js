@@ -1,9 +1,20 @@
-const io = require("socket.io")();
+const app = require("express")();
+const http = require("http").createServer(app);
+const io = require("socket.io")(http);
 const { v4: uuidv4 } = require("uuid");
 
 const messageHandler = require("./handlers/message.handler");
 
 const users = {};
+var port = process.env.PORT || 3000
+
+
+app.get("/", (req, res) => {
+  res.json({ok:true});
+});
+
+
+
 
 function createUserAvatarUrl(username) {
   // const nameSpace = username.replaceAll("\\s+","")
@@ -85,3 +96,7 @@ io.on("connection", (socket) => {
 });
 
 io.listen(3001);
+
+http.listen(port, function() {
+  console.log('listening on *:3000');
+});
