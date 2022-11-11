@@ -21,12 +21,7 @@ function getUsersOnline() {
 io.on("connection", (socket) => {
   console.log("socket.id:", socket.id);
   users[socket.id] = { userId: uuidv4() };
-  socket.on("join", (username) => {
-    users[socket.id].username = username;
-    users[socket.id].avatar = createUserAvatarUrl(username);
-    console.log("username:", username);
-    messageHandler.handleMessage(socket, users);
-  });
+ 
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
@@ -40,13 +35,7 @@ io.on("connection", (socket) => {
   socket.on("action", (action) => {
     console.log("action:", action);
 
-    if (action.type === "server/hello") {
-      console.log("got hello event", action);
-      socket.emit("action", {
-        type: "chat/setMessage",
-        payload: "Hello from the server!",
-      });
-    }
+  
     if (action.type === "server/join") {
       console.log("got join event", action);
       const username = action.payload;
@@ -56,7 +45,42 @@ io.on("connection", (socket) => {
         type: "chat/setUsers",
         payload: getUsersOnline(),
       });
+      socket.emit('action',{
+        type:'chat/setSelfUser',
+        payload:users[socket.id]
+      })
     }
+    if (action.type === "server/private-message") {
+      console.log("private message event", action);
+   
+      const {conversationId} = action.payload
+      const from = users[socket.id].userId;
+      const userValues = Object.values(users);
+      const socketIds = Object.keys(users);
+      for (let i = 0; i < userValues.length; i++) {
+        
+        
+        if (userValues[i].userId === conversationId) {
+          const socketId = socketIds[i];
+
+
+          io.to(socketId).emit("action", {
+            type: "chat/setPrivateMessage",
+            payload: {
+              ...action.payload,
+              conversationId: from,
+            },
+          });
+
+
+        }
+
+
+      }
+      
+    }
+
+
   });
 });
 
